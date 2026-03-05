@@ -16,11 +16,19 @@ const PromptDetail = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("prompts")
-        .select("*, categories(name, icon_url), users!fk_prompt_creator(username, profile_bio)")
+        .select("*, categories(name, icon_url)")
         .eq("prompt_id", parseInt(id!))
         .single();
       if (error) throw error;
-      return data;
+
+      // Fetch creator info from secure view
+      const { data: creator } = await supabase
+        .from("public_profiles" as any)
+        .select("username, profile_bio")
+        .eq("user_id", data.creator_id)
+        .single();
+
+      return { ...data, creator };
     },
     enabled: !!id,
   });
@@ -30,7 +38,7 @@ const PromptDetail = () => {
     queryFn: async () => {
       const { data } = await supabase
         .from("reviews")
-        .select("*, users!fk_review_buyer(username)")
+        .select("*")
         .eq("prompt_id", parseInt(id!))
         .order("created_at", { ascending: false });
       return data || [];
@@ -77,7 +85,7 @@ const PromptDetail = () => {
     );
   }
 
-  const creator = prompt.users as any;
+  const creator = (prompt as any).creator;
   const category = prompt.categories as any;
 
   return (
@@ -160,7 +168,7 @@ const PromptDetail = () => {
                           <div className="flex items-center gap-2">
                             <User className="h-4 w-4 text-muted-foreground" />
                             <span className="text-sm font-medium text-foreground">
-                              {(review.users as any)?.username}
+                              Buyer #{review.buyer_id}
                             </span>
                             {review.is_verified && (
                               <Badge variant="outline" className="text-[10px] border-primary/30 text-primary">Verified</Badge>
