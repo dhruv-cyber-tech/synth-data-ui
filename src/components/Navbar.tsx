@@ -1,9 +1,19 @@
-import { Link } from "react-router-dom";
-import { Terminal, Zap } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { Terminal, Zap, LogOut, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
+import { useAuth } from "@/contexts/AuthContext";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const Navbar = () => {
+  const { user, profile, signOut } = useAuth();
+  const navigate = useNavigate();
+
   return (
     <motion.nav
       initial={{ y: -20, opacity: 0 }}
@@ -21,25 +31,45 @@ const Navbar = () => {
         </Link>
 
         <div className="hidden md:flex items-center gap-8">
-          <Link to="/" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-            Home
-          </Link>
-          <Link to="/prompts" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-            Explore
-          </Link>
-          <Link to="/categories" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-            Categories
-          </Link>
+          <Link to="/" className="text-sm text-muted-foreground hover:text-primary transition-colors">Home</Link>
+          <Link to="/prompts" className="text-sm text-muted-foreground hover:text-primary transition-colors">Explore</Link>
+          <Link to="/categories" className="text-sm text-muted-foreground hover:text-primary transition-colors">Categories</Link>
         </div>
 
         <div className="flex items-center gap-3">
-          <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-primary">
-            Sign In
-          </Button>
-          <Button size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90 glow-green">
-            <Zap className="h-4 w-4" />
-            Get Started
-          </Button>
+          {user ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground hover:text-primary">
+                  <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center">
+                    <User className="h-4 w-4 text-primary" />
+                  </div>
+                  <span className="hidden sm:inline text-sm font-mono">
+                    {profile?.username || user.email?.split("@")[0]}
+                  </span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="bg-card border-border">
+                <DropdownMenuItem className="text-muted-foreground text-xs font-mono cursor-default">
+                  {user.email}
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={signOut} className="text-destructive cursor-pointer">
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Sign Out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <>
+              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-primary" onClick={() => navigate("/auth")}>
+                Sign In
+              </Button>
+              <Button size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90 glow-green" onClick={() => navigate("/auth")}>
+                <Zap className="h-4 w-4" />
+                Get Started
+              </Button>
+            </>
+          )}
         </div>
       </div>
     </motion.nav>
