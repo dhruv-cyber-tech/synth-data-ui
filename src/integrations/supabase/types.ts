@@ -38,6 +38,13 @@ export type Database = {
             foreignKeyName: "fk_admin_user"
             columns: ["user_id"]
             isOneToOne: true
+            referencedRelation: "public_profiles"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "fk_admin_user"
+            columns: ["user_id"]
+            isOneToOne: true
             referencedRelation: "users"
             referencedColumns: ["user_id"]
           },
@@ -262,6 +269,13 @@ export type Database = {
             foreignKeyName: "fk_prompt_creator"
             columns: ["creator_id"]
             isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "fk_prompt_creator"
+            columns: ["creator_id"]
+            isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["user_id"]
           },
@@ -293,6 +307,13 @@ export type Database = {
           purchased_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "fk_purchase_buyer"
+            columns: ["buyer_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["user_id"]
+          },
           {
             foreignKeyName: "fk_purchase_buyer"
             columns: ["buyer_id"]
@@ -338,6 +359,13 @@ export type Database = {
           review_id?: number
         }
         Relationships: [
+          {
+            foreignKeyName: "fk_review_buyer"
+            columns: ["buyer_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["user_id"]
+          },
           {
             foreignKeyName: "fk_review_buyer"
             columns: ["buyer_id"]
@@ -407,7 +435,33 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      public_profiles: {
+        Row: {
+          created_at: string | null
+          is_active: boolean | null
+          profile_bio: string | null
+          role: string | null
+          user_id: number | null
+          username: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          is_active?: boolean | null
+          profile_bio?: string | null
+          role?: string | null
+          user_id?: number | null
+          username?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          is_active?: boolean | null
+          profile_bio?: string | null
+          role?: string | null
+          user_id?: number | null
+          username?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       [_ in never]: never

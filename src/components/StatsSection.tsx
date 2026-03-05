@@ -8,7 +8,7 @@ const StatsSection = () => {
     queryFn: async () => {
       const [promptsRes, usersRes, reviewsRes] = await Promise.all([
         supabase.from("prompts").select("prompt_id", { count: "exact", head: true }),
-        supabase.from("users").select("user_id", { count: "exact", head: true }),
+        supabase.from("public_profiles" as any).select("user_id", { count: "exact", head: true }),
         supabase.from("reviews").select("review_id", { count: "exact", head: true }),
       ]);
       return {
