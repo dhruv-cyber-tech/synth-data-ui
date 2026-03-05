@@ -7,6 +7,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import Index from "./pages/Index";
 import Prompts from "./pages/Prompts";
 import PromptDetail from "./pages/PromptDetail";
+import CreatePrompt from "./pages/CreatePrompt";
 import Auth from "./pages/Auth";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
@@ -25,6 +26,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/prompts" element={<Prompts />} />
             <Route path="/prompt/:id" element={<PromptDetail />} />
+            <Route path="/sell" element={<CreatePrompt />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />

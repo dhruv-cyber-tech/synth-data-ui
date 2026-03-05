@@ -429,6 +429,7 @@ export type Database = {
       }
       users: {
         Row: {
+          auth_user_id: string | null
           created_at: string
           email: string
           is_active: boolean
@@ -439,6 +440,7 @@ export type Database = {
           username: string
         }
         Insert: {
+          auth_user_id?: string | null
           created_at?: string
           email: string
           is_active?: boolean
@@ -449,6 +451,7 @@ export type Database = {
           username: string
         }
         Update: {
+          auth_user_id?: string | null
           created_at?: string
           email?: string
           is_active?: boolean
@@ -491,7 +494,17 @@ export type Database = {
       }
     }
     Functions: {
-      [_ in never]: never
+      create_prompt: {
+        Args: {
+          p_ai_model_target: string
+          p_category_id: number
+          p_content: string
+          p_description: string
+          p_price: number
+          p_title: string
+        }
+        Returns: number
+      }
     }
     Enums: {
       [_ in never]: never

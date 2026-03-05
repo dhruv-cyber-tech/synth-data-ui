@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { Terminal, Zap, LogOut, User } from "lucide-react";
+import { Terminal, Zap, LogOut, User, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
@@ -34,6 +34,9 @@ const Navbar = () => {
           <Link to="/" className="text-sm text-muted-foreground hover:text-primary transition-colors">Home</Link>
           <Link to="/prompts" className="text-sm text-muted-foreground hover:text-primary transition-colors">Explore</Link>
           <Link to="/categories" className="text-sm text-muted-foreground hover:text-primary transition-colors">Categories</Link>
+          <Link to="/sell" className="text-sm text-muted-foreground hover:text-primary transition-colors flex items-center gap-1">
+            <Plus className="h-3.5 w-3.5" /> Sell
+          </Link>
         </div>
 
         <div className="flex items-center gap-3">
