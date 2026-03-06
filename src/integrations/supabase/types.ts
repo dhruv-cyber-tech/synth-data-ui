@@ -494,29 +494,17 @@ export type Database = {
       }
     }
     Functions: {
-      create_prompt:
-        | {
-            Args: {
-              p_ai_model_target: string
-              p_category_id: number
-              p_content: string
-              p_description: string
-              p_price: number
-              p_title: string
-            }
-            Returns: number
-          }
-        | {
-            Args: {
-              p_ai_model_target: string
-              p_category_id: number
-              p_content: string
-              p_description: string
-              p_price: number
-              p_title: string
-            }
-            Returns: number
-          }
+      create_prompt: {
+        Args: {
+          p_ai_model_target: string
+          p_category_id: number
+          p_content: string
+          p_description: string
+          p_price: number
+          p_title: string
+        }
+        Returns: number
+      }
     }
     Enums: {
       [_ in never]: never
