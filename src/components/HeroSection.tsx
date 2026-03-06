@@ -51,10 +51,12 @@ const HeroSection = () => {
                 <ArrowRight className="h-4 w-4 ml-1" />
               </Button>
             </Link>
-            <Button size="lg" variant="outline" className="border-border hover:border-primary/40 hover:bg-primary/5 h-12 px-8 text-base">
-              <Terminal className="h-4 w-4 mr-1" />
-              Sell Your Prompts
-            </Button>
+            <Link to="/sell">
+              <Button size="lg" variant="outline" className="border-border hover:border-primary/40 hover:bg-primary/5 h-12 px-8 text-base">
+                <Terminal className="h-4 w-4 mr-1" />
+                Sell Your Prompts
+              </Button>
+            </Link>
           </div>
         </motion.div>
 
