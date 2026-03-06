@@ -13,7 +13,7 @@ const Footer = () => {
             </span>
           </Link>
           <p className="text-sm text-muted-foreground font-mono">
-            © 2026 PromptLab. Built for engineers.
+            © 2026 PromptLab. Crafted with 💚 by <span className="text-primary font-semibold">Dhruv</span>
           </p>
         </div>
       </div>
