@@ -44,17 +44,22 @@ const Prompts = () => {
       if (error) throw error;
 
       const promptIds = promptsData.map((p) => p.prompt_id);
-      const { data: reviews } = await supabase
-        .from("reviews")
-        .select("prompt_id, rating")
-        .in("prompt_id", promptIds);
+      const creatorIds = [...new Set(promptsData.map((p) => p.creator_id))];
+
+      const [{ data: reviews }, { data: creators }] = await Promise.all([
+        supabase.from("reviews").select("prompt_id, rating").in("prompt_id", promptIds),
+        supabase.from("public_profiles" as any).select("user_id, username").in("user_id", creatorIds),
+      ]);
 
       const ratingMap: Record<number, { sum: number; count: number }> = {};
-      reviews?.forEach((r) => {
+      reviews?.forEach((r: any) => {
         if (!ratingMap[r.prompt_id]) ratingMap[r.prompt_id] = { sum: 0, count: 0 };
         ratingMap[r.prompt_id].sum += r.rating;
         ratingMap[r.prompt_id].count += 1;
       });
+
+      const creatorMap: Record<number, string> = {};
+      (creators as any[])?.forEach((c: any) => { creatorMap[c.user_id] = c.username; });
 
       return promptsData.map((p) => ({
         ...p,
@@ -62,6 +67,7 @@ const Prompts = () => {
         category_icon: (p.categories as any)?.icon_url,
         avg_rating: ratingMap[p.prompt_id] ? ratingMap[p.prompt_id].sum / ratingMap[p.prompt_id].count : 0,
         review_count: ratingMap[p.prompt_id]?.count || 0,
+        creator_name: creatorMap[p.creator_id] || "Anonymous",
       }));
     },
   });
