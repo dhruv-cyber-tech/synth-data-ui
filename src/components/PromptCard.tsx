@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Star, ArrowUpRight } from "lucide-react";
+import { Star, ArrowUpRight, User } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
 
@@ -49,6 +49,16 @@ const PromptCard = ({ prompt, index = 0 }: PromptCardProps) => {
           <p className="text-sm text-muted-foreground leading-relaxed mb-4 flex-1 line-clamp-2">
             {prompt.description}
           </p>
+
+          {/* Creator */}
+          {prompt.creator_name && (
+            <div className="flex items-center gap-2 mb-4">
+              <div className="h-6 w-6 rounded-md bg-accent/20 flex items-center justify-center">
+                <User className="h-3.5 w-3.5 text-accent" />
+              </div>
+              <span className="text-xs text-muted-foreground font-mono">{prompt.creator_name}</span>
+            </div>
+          )}
 
           {/* Bottom row */}
           <div className="flex items-center justify-between pt-4 border-t border-border/50">
