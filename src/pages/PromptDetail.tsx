@@ -1,15 +1,23 @@
+import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import PromptPurchaseCard from "@/components/PromptPurchaseCard";
+import PromptContent from "@/components/PromptContent";
+import PromptVersions from "@/components/PromptVersions";
+import PromptReviews from "@/components/PromptReviews";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Star, ArrowLeft, ShoppingCart, User, Clock, Layers } from "lucide-react";
+import { ArrowLeft, Clock, Layers } from "lucide-react";
 import { motion } from "framer-motion";
+import { toast } from "sonner";
 
 const PromptDetail = () => {
   const { id } = useParams<{ id: string }>();
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
 
   const { data: prompt, isLoading } = useQuery({
     queryKey: ["prompt-detail", id],
@@ -21,7 +29,6 @@ const PromptDetail = () => {
         .single();
       if (error) throw error;
 
-      // Fetch creator info from secure view
       const { data: creator } = await supabase
         .from("public_profiles" as any)
         .select("username, profile_bio")
@@ -59,6 +66,47 @@ const PromptDetail = () => {
     enabled: !!id,
   });
 
+  const { data: hasPurchased } = useQuery({
+    queryKey: ["has-purchased", id],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("has_purchased", {
+        p_prompt_id: parseInt(id!),
+      });
+      if (error) return false;
+      return data as boolean;
+    },
+    enabled: !!id && !!user,
+  });
+
+  const purchaseMutation = useMutation({
+    mutationFn: async () => {
+      const { data, error } = await supabase.rpc("purchase_prompt", {
+        p_prompt_id: parseInt(id!),
+      });
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      toast.success("Prompt purchased successfully!");
+      queryClient.invalidateQueries({ queryKey: ["has-purchased", id] });
+    },
+    onError: (error: any) => {
+      if (error.message?.includes("Already purchased")) {
+        toast.info("You already own this prompt.");
+      } else {
+        toast.error("Purchase failed. Please try again.");
+      }
+    },
+  });
+
+  const handleBuy = () => {
+    if (!user) {
+      toast.error("Please sign in to purchase prompts.");
+      return;
+    }
+    purchaseMutation.mutate();
+  };
+
   const avgRating = reviews?.length
     ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
     : 0;
@@ -87,6 +135,7 @@ const PromptDetail = () => {
 
   const creator = (prompt as any).creator;
   const category = prompt.categories as any;
+  const latestContent = versions?.[0]?.content;
 
   return (
     <div className="min-h-screen bg-background">
@@ -133,114 +182,30 @@ const PromptDetail = () => {
                 )}
               </div>
 
+              {/* Prompt Content (visible after purchase) */}
+              <PromptContent
+                hasPurchased={!!hasPurchased}
+                content={latestContent}
+                title={prompt.title}
+              />
+
               {/* Versions */}
-              {versions && versions.length > 0 && (
-                <div className="rounded-xl border border-border bg-card/30 p-6">
-                  <h3 className="text-sm font-mono text-primary uppercase tracking-widest mb-4">// VERSION HISTORY</h3>
-                  <div className="space-y-4">
-                    {versions.map((v) => (
-                      <div key={v.version_id} className="flex items-start gap-4 border-l-2 border-primary/20 pl-4">
-                        <Badge variant="secondary" className="font-mono text-xs shrink-0">v{v.version_number}</Badge>
-                        <div>
-                          <p className="text-sm text-foreground">{v.change_notes}</p>
-                          <p className="text-xs text-muted-foreground font-mono mt-1">
-                            {new Date(v.created_at).toLocaleDateString()}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
+              <PromptVersions versions={versions} />
 
               {/* Reviews */}
-              <div>
-                <h3 className="text-sm font-mono text-primary uppercase tracking-widest mb-4">
-                  // REVIEWS ({reviews?.length || 0})
-                </h3>
-                {reviews?.length === 0 ? (
-                  <p className="text-sm text-muted-foreground">No reviews yet.</p>
-                ) : (
-                  <div className="space-y-4">
-                    {reviews?.map((review) => (
-                      <div key={review.review_id} className="rounded-xl border border-border bg-card/30 p-5">
-                        <div className="flex items-center justify-between mb-2">
-                          <div className="flex items-center gap-2">
-                            <User className="h-4 w-4 text-muted-foreground" />
-                            <span className="text-sm font-medium text-foreground">
-                              Buyer #{review.buyer_id}
-                            </span>
-                            {review.is_verified && (
-                              <Badge variant="outline" className="text-[10px] border-primary/30 text-primary">Verified</Badge>
-                            )}
-                          </div>
-                          <div className="flex items-center gap-1">
-                            {[...Array(5)].map((_, i) => (
-                              <Star
-                                key={i}
-                                className={`h-3.5 w-3.5 ${i < review.rating ? "fill-primary text-primary" : "text-muted"}`}
-                              />
-                            ))}
-                          </div>
-                        </div>
-                        <p className="text-sm text-muted-foreground">{review.comment}</p>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
+              <PromptReviews reviews={reviews} />
             </motion.div>
 
-            {/* Sidebar: Purchase card */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.2 }}
-            >
-              <div className="sticky top-24 rounded-xl border border-border bg-card/50 backdrop-blur-sm p-6 glow-green">
-                <div className="text-4xl font-bold font-mono text-primary mb-2">
-                  ${prompt.price.toFixed(2)}
-                </div>
-                <p className="text-xs text-muted-foreground mb-6">One-time purchase</p>
-
-                {avgRating > 0 && (
-                  <div className="flex items-center gap-2 mb-6">
-                    <div className="flex items-center gap-1">
-                      {[...Array(5)].map((_, i) => (
-                        <Star
-                          key={i}
-                          className={`h-4 w-4 ${i < Math.round(avgRating) ? "fill-primary text-primary" : "text-muted"}`}
-                        />
-                      ))}
-                    </div>
-                    <span className="text-sm text-muted-foreground">
-                      {avgRating.toFixed(1)} ({reviews?.length})
-                    </span>
-                  </div>
-                )}
-
-                <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90 glow-green h-12 text-base font-semibold mb-3">
-                  <ShoppingCart className="h-4 w-4 mr-2" />
-                  Buy Now
-                </Button>
-
-                {/* Creator info */}
-                {creator && (
-                  <div className="mt-6 pt-6 border-t border-border/50">
-                    <p className="text-xs font-mono text-muted-foreground uppercase tracking-wider mb-2">Created by</p>
-                    <div className="flex items-center gap-3">
-                      <div className="h-10 w-10 rounded-lg bg-accent/20 flex items-center justify-center">
-                        <User className="h-5 w-5 text-accent" />
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-foreground">{creator.username}</p>
-                        <p className="text-xs text-muted-foreground line-clamp-1">{creator.profile_bio}</p>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </motion.div>
+            {/* Sidebar */}
+            <PromptPurchaseCard
+              price={prompt.price}
+              avgRating={avgRating}
+              reviewCount={reviews?.length || 0}
+              creator={creator}
+              hasPurchased={!!hasPurchased}
+              isPurchasing={purchaseMutation.isPending}
+              onBuy={handleBuy}
+            />
           </div>
         </div>
       </main>
