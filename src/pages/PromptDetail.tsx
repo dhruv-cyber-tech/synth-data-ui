@@ -9,6 +9,7 @@ import PromptPurchaseCard from "@/components/PromptPurchaseCard";
 import PromptContent from "@/components/PromptContent";
 import PromptVersions from "@/components/PromptVersions";
 import PromptReviews from "@/components/PromptReviews";
+import ReviewForm from "@/components/ReviewForm";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Clock, Layers } from "lucide-react";
 import { motion } from "framer-motion";
@@ -78,6 +79,18 @@ const PromptDetail = () => {
     enabled: !!id && !!user,
   });
 
+  const { data: hasReviewed } = useQuery({
+    queryKey: ["has-reviewed", id],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("has_reviewed", {
+        p_prompt_id: parseInt(id!),
+      });
+      if (error) return false;
+      return data as boolean;
+    },
+    enabled: !!id && !!user && !!hasPurchased,
+  });
+
   const purchaseMutation = useMutation({
     mutationFn: async () => {
       const { data, error } = await supabase.rpc("purchase_prompt", {
@@ -99,6 +112,30 @@ const PromptDetail = () => {
     },
   });
 
+  const reviewMutation = useMutation({
+    mutationFn: async ({ rating, comment }: { rating: number; comment: string }) => {
+      const { data, error } = await supabase.rpc("submit_review", {
+        p_prompt_id: parseInt(id!),
+        p_rating: rating as unknown as number,
+        p_comment: comment || null,
+      });
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      toast.success("Review submitted! It will appear after admin approval.");
+      queryClient.invalidateQueries({ queryKey: ["has-reviewed", id] });
+      queryClient.invalidateQueries({ queryKey: ["prompt-reviews", id] });
+    },
+    onError: (error: any) => {
+      if (error.message?.includes("already reviewed")) {
+        toast.info("You have already reviewed this prompt.");
+      } else {
+        toast.error("Failed to submit review.");
+      }
+    },
+  });
+
   const handleBuy = () => {
     if (!user) {
       toast.error("Please sign in to purchase prompts.");
@@ -107,8 +144,12 @@ const PromptDetail = () => {
     purchaseMutation.mutate();
   };
 
+  const handleReviewSubmit = (rating: number, comment: string) => {
+    reviewMutation.mutate({ rating, comment });
+  };
+
   const avgRating = reviews?.length
-    ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
+    ? reviews.filter(r => r.is_verified).reduce((sum, r) => sum + r.rating, 0) / (reviews.filter(r => r.is_verified).length || 1)
     : 0;
 
   if (isLoading) {
@@ -136,6 +177,7 @@ const PromptDetail = () => {
   const creator = (prompt as any).creator;
   const category = prompt.categories as any;
   const latestContent = versions?.[0]?.content;
+  const showReviewForm = hasPurchased && !hasReviewed;
 
   return (
     <div className="min-h-screen bg-background">
@@ -147,7 +189,6 @@ const PromptDetail = () => {
           </Link>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Main content */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -182,7 +223,7 @@ const PromptDetail = () => {
                 )}
               </div>
 
-              {/* Prompt Content (visible after purchase) */}
+              {/* Prompt Content */}
               <PromptContent
                 hasPurchased={!!hasPurchased}
                 content={latestContent}
@@ -192,6 +233,14 @@ const PromptDetail = () => {
               {/* Versions */}
               <PromptVersions versions={versions} />
 
+              {/* Review Form (only for buyers who haven't reviewed yet) */}
+              {showReviewForm && (
+                <ReviewForm
+                  onSubmit={handleReviewSubmit}
+                  isSubmitting={reviewMutation.isPending}
+                />
+              )}
+
               {/* Reviews */}
               <PromptReviews reviews={reviews} />
             </motion.div>
@@ -200,7 +249,7 @@ const PromptDetail = () => {
             <PromptPurchaseCard
               price={prompt.price}
               avgRating={avgRating}
-              reviewCount={reviews?.length || 0}
+              reviewCount={reviews?.filter(r => r.is_verified).length || 0}
               creator={creator}
               hasPurchased={!!hasPurchased}
               isPurchasing={purchaseMutation.isPending}

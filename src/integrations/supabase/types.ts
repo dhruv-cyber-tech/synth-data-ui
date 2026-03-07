@@ -506,7 +506,12 @@ export type Database = {
         Returns: number
       }
       has_purchased: { Args: { p_prompt_id: number }; Returns: boolean }
+      has_reviewed: { Args: { p_prompt_id: number }; Returns: boolean }
       purchase_prompt: { Args: { p_prompt_id: number }; Returns: number }
+      submit_review: {
+        Args: { p_comment: string; p_prompt_id: number; p_rating: number }
+        Returns: number
+      }
     }
     Enums: {
       [_ in never]: never
