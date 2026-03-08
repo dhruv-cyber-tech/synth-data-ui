@@ -55,7 +55,7 @@ const PromptDetail = () => {
   });
 
   const { data: versions } = useQuery({
-    queryKey: ["prompt-versions", id],
+    queryKey: ["prompt-versions", id, hasPurchased],
     queryFn: async () => {
       const { data } = await supabase
         .from("prompt_versions")
@@ -64,7 +64,7 @@ const PromptDetail = () => {
         .order("version_number", { ascending: false });
       return data || [];
     },
-    enabled: !!id,
+    enabled: !!id && !!hasPurchased,
   });
 
   const { data: hasPurchased } = useQuery({
