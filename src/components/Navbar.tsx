@@ -1,5 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
-import { Terminal, Zap, LogOut, User, Plus } from "lucide-react";
+import { Terminal, Zap, LogOut, User, Plus, Shield } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
@@ -13,6 +15,15 @@ import {
 const Navbar = () => {
   const { user, profile, signOut } = useAuth();
   const navigate = useNavigate();
+
+  const { data: isAdmin } = useQuery({
+    queryKey: ["is-admin", user?.id],
+    queryFn: async () => {
+      const { data } = await (supabase.rpc as any)("is_admin", {});
+      return data as boolean;
+    },
+    enabled: !!user,
+  });
 
   return (
     <motion.nav
@@ -60,6 +71,12 @@ const Navbar = () => {
                   <User className="h-4 w-4 mr-2" />
                   My Profile
                 </DropdownMenuItem>
+                {isAdmin && (
+                  <DropdownMenuItem onClick={() => navigate("/admin")} className="cursor-pointer text-primary">
+                    <Shield className="h-4 w-4 mr-2" />
+                    Admin Dashboard
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuItem onClick={signOut} className="text-destructive cursor-pointer">
                   <LogOut className="h-4 w-4 mr-2" />
                   Sign Out
