@@ -6,8 +6,10 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import AdminSidebar from "@/components/admin/AdminSidebar";
 import AdminReviews from "@/components/admin/AdminReviews";
 import AdminPrompts from "@/components/admin/AdminPrompts";
+import AdminStats from "@/components/admin/AdminStats";
+import AdminAnalyticsCharts from "@/components/admin/AdminAnalyticsCharts";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Shield, MessageSquare, FileText } from "lucide-react";
+import { Shield, MessageSquare, FileText, BarChart3 } from "lucide-react";
 import { motion } from "framer-motion";
 
 const AdminDashboard = () => {
@@ -64,8 +66,13 @@ const AdminDashboard = () => {
 
           <main className="flex-1 p-6">
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-              <Tabs defaultValue="reviews">
+              <AdminStats />
+
+              <Tabs defaultValue="analytics">
                 <TabsList className="bg-card border border-border mb-6">
+                  <TabsTrigger value="analytics" className="gap-2 font-mono text-xs">
+                    <BarChart3 className="h-3.5 w-3.5" /> Analytics
+                  </TabsTrigger>
                   <TabsTrigger value="reviews" className="gap-2 font-mono text-xs">
                     <MessageSquare className="h-3.5 w-3.5" /> Pending Reviews
                   </TabsTrigger>
@@ -74,6 +81,9 @@ const AdminDashboard = () => {
                   </TabsTrigger>
                 </TabsList>
 
+                <TabsContent value="analytics">
+                  <AdminAnalyticsCharts />
+                </TabsContent>
                 <TabsContent value="reviews">
                   <AdminReviews />
                 </TabsContent>
