@@ -27,7 +27,7 @@ const Profile = () => {
   const { data: myPurchases, isLoading: loadingPurchases } = useQuery({
     queryKey: ["my-purchases", user?.id],
     queryFn: async () => {
-      const { data } = await supabase.rpc("get_my_purchases", {});
+      const { data } = await (supabase.rpc as any)("get_my_purchases", {});
       return (data as any[]) || [];
     },
     enabled: !!user,
