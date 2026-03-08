@@ -433,7 +433,6 @@ export type Database = {
           created_at: string
           email: string
           is_active: boolean
-          password_hash: string
           profile_bio: string | null
           role: string
           user_id: number
@@ -444,7 +443,6 @@ export type Database = {
           created_at?: string
           email: string
           is_active?: boolean
-          password_hash: string
           profile_bio?: string | null
           role?: string
           user_id?: number
@@ -455,7 +453,6 @@ export type Database = {
           created_at?: string
           email?: string
           is_active?: boolean
-          password_hash?: string
           profile_bio?: string | null
           role?: string
           user_id?: number
@@ -468,25 +465,19 @@ export type Database = {
       public_profiles: {
         Row: {
           created_at: string | null
-          is_active: boolean | null
           profile_bio: string | null
-          role: string | null
           user_id: number | null
           username: string | null
         }
         Insert: {
           created_at?: string | null
-          is_active?: boolean | null
           profile_bio?: string | null
-          role?: string | null
           user_id?: number | null
           username?: string | null
         }
         Update: {
           created_at?: string | null
-          is_active?: boolean | null
           profile_bio?: string | null
-          role?: string | null
           user_id?: number | null
           username?: string | null
         }
