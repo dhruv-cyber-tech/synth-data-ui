@@ -11,6 +11,7 @@ import CreatePrompt from "./pages/CreatePrompt";
 import Auth from "./pages/Auth";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
+import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -27,6 +28,7 @@ const App = () => (
             <Route path="/prompts" element={<Prompts />} />
             <Route path="/prompt/:id" element={<PromptDetail />} />
             <Route path="/sell" element={<CreatePrompt />} />
+            <Route path="/profile" element={<Profile />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />

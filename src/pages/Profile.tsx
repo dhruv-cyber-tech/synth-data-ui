@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -19,14 +18,7 @@ const Profile = () => {
   const { data: myPrompts, isLoading: loadingPrompts } = useQuery({
     queryKey: ["my-prompts", user?.id],
     queryFn: async () => {
-      const { data: userRow } = await supabase
-        .from("public_profiles" as any)
-        .select("user_id")
-        .eq("user_id", (await supabase.rpc("get_my_user_id", {})) as any)
-        .single();
-
-      // fallback: get user_id via RPC
-      const { data } = await supabase.rpc("get_my_prompts" as any, {});
+      const { data } = await supabase.rpc("get_my_prompts", {});
       return (data as any[]) || [];
     },
     enabled: !!user,
@@ -35,7 +27,7 @@ const Profile = () => {
   const { data: myPurchases, isLoading: loadingPurchases } = useQuery({
     queryKey: ["my-purchases", user?.id],
     queryFn: async () => {
-      const { data } = await supabase.rpc("get_my_purchases" as any, {});
+      const { data } = await supabase.rpc("get_my_purchases", {});
       return (data as any[]) || [];
     },
     enabled: !!user,

@@ -56,6 +56,10 @@ const Navbar = () => {
                 <DropdownMenuItem className="text-muted-foreground text-xs font-mono cursor-default">
                   {user.email}
                 </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate("/profile")} className="cursor-pointer">
+                  <User className="h-4 w-4 mr-2" />
+                  My Profile
+                </DropdownMenuItem>
                 <DropdownMenuItem onClick={signOut} className="text-destructive cursor-pointer">
                   <LogOut className="h-4 w-4 mr-2" />
                   Sign Out
