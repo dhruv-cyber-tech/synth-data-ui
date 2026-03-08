@@ -494,6 +494,41 @@ export type Database = {
       }
     }
     Functions: {
+      admin_approve_review: {
+        Args: { p_review_id: number }
+        Returns: undefined
+      }
+      admin_get_pending_reviews: {
+        Args: never
+        Returns: {
+          buyer_id: number
+          buyer_username: string
+          comment: string
+          created_at: string
+          prompt_id: number
+          prompt_title: string
+          rating: number
+          review_id: number
+        }[]
+      }
+      admin_get_prompts: {
+        Args: never
+        Returns: {
+          ai_model_target: string
+          created_at: string
+          creator_username: string
+          description: string
+          price: number
+          prompt_id: number
+          status: string
+          title: string
+        }[]
+      }
+      admin_reject_review: { Args: { p_review_id: number }; Returns: undefined }
+      admin_update_prompt_status: {
+        Args: { p_prompt_id: number; p_status: string }
+        Returns: undefined
+      }
       create_prompt: {
         Args: {
           p_ai_model_target: string
@@ -530,6 +565,7 @@ export type Database = {
       }
       has_purchased: { Args: { p_prompt_id: number }; Returns: boolean }
       has_reviewed: { Args: { p_prompt_id: number }; Returns: boolean }
+      is_admin: { Args: never; Returns: boolean }
       purchase_prompt: { Args: { p_prompt_id: number }; Returns: number }
       submit_review: {
         Args: { p_comment: string; p_prompt_id: number; p_rating: number }
