@@ -498,6 +498,15 @@ export type Database = {
         Args: { p_review_id: number }
         Returns: undefined
       }
+      admin_get_analytics: {
+        Args: never
+        Returns: {
+          recorded_date: string
+          total_purchases: number
+          total_revenue: number
+          total_views: number
+        }[]
+      }
       admin_get_pending_reviews: {
         Args: never
         Returns: {
@@ -522,6 +531,16 @@ export type Database = {
           prompt_id: number
           status: string
           title: string
+        }[]
+      }
+      admin_get_summary: {
+        Args: never
+        Returns: {
+          pending_reviews: number
+          total_prompts: number
+          total_purchases: number
+          total_revenue: number
+          total_users: number
         }[]
       }
       admin_reject_review: { Args: { p_review_id: number }; Returns: undefined }
