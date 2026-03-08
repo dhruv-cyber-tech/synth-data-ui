@@ -18,7 +18,7 @@ const Profile = () => {
   const { data: myPrompts, isLoading: loadingPrompts } = useQuery({
     queryKey: ["my-prompts", user?.id],
     queryFn: async () => {
-      const { data } = await supabase.rpc("get_my_prompts", {});
+      const { data } = await (supabase.rpc as any)("get_my_prompts", {});
       return (data as any[]) || [];
     },
     enabled: !!user,
