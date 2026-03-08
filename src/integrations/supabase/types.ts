@@ -505,6 +505,29 @@ export type Database = {
         }
         Returns: number
       }
+      get_my_prompts: {
+        Args: never
+        Returns: {
+          ai_model_target: string
+          created_at: string
+          description: string
+          price: number
+          prompt_id: number
+          status: string
+          title: string
+        }[]
+      }
+      get_my_purchases: {
+        Args: never
+        Returns: {
+          amount_paid: number
+          payment_status: string
+          prompt_id: number
+          prompt_title: string
+          purchase_id: number
+          purchased_at: string
+        }[]
+      }
       has_purchased: { Args: { p_prompt_id: number }; Returns: boolean }
       has_reviewed: { Args: { p_prompt_id: number }; Returns: boolean }
       purchase_prompt: { Args: { p_prompt_id: number }; Returns: number }
