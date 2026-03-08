@@ -54,6 +54,18 @@ const PromptDetail = () => {
     enabled: !!id,
   });
 
+  const { data: hasPurchased } = useQuery({
+    queryKey: ["has-purchased", id],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("has_purchased", {
+        p_prompt_id: parseInt(id!),
+      });
+      if (error) return false;
+      return data as boolean;
+    },
+    enabled: !!id && !!user,
+  });
+
   const { data: versions } = useQuery({
     queryKey: ["prompt-versions", id, hasPurchased],
     queryFn: async () => {
@@ -65,18 +77,6 @@ const PromptDetail = () => {
       return data || [];
     },
     enabled: !!id && !!hasPurchased,
-  });
-
-  const { data: hasPurchased } = useQuery({
-    queryKey: ["has-purchased", id],
-    queryFn: async () => {
-      const { data, error } = await supabase.rpc("has_purchased", {
-        p_prompt_id: parseInt(id!),
-      });
-      if (error) return false;
-      return data as boolean;
-    },
-    enabled: !!id && !!user,
   });
 
   const { data: hasReviewed } = useQuery({
