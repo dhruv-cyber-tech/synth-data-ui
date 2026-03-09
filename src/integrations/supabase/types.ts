@@ -257,6 +257,7 @@ export type Database = {
           price: number
           prompt_id: number
           status: string
+          suggested_category: string | null
           title: string
           updated_at: string
         }
@@ -269,6 +270,7 @@ export type Database = {
           price?: number
           prompt_id?: number
           status?: string
+          suggested_category?: string | null
           title: string
           updated_at?: string
         }
@@ -281,6 +283,7 @@ export type Database = {
           price?: number
           prompt_id?: number
           status?: string
+          suggested_category?: string | null
           title?: string
           updated_at?: string
         }
@@ -539,17 +542,30 @@ export type Database = {
         Args: { p_prompt_id: number; p_status: string }
         Returns: undefined
       }
-      create_prompt: {
-        Args: {
-          p_ai_model_target: string
-          p_category_id: number
-          p_content: string
-          p_description: string
-          p_price: number
-          p_title: string
-        }
-        Returns: number
-      }
+      create_prompt:
+        | {
+            Args: {
+              p_ai_model_target: string
+              p_category_id: number
+              p_content: string
+              p_description: string
+              p_price: number
+              p_title: string
+            }
+            Returns: number
+          }
+        | {
+            Args: {
+              p_ai_model_target: string
+              p_category_id: number
+              p_content: string
+              p_description: string
+              p_price: number
+              p_suggested_category?: string
+              p_title: string
+            }
+            Returns: number
+          }
       get_my_prompts: {
         Args: never
         Returns: {
