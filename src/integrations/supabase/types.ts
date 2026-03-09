@@ -524,6 +524,7 @@ export type Database = {
           price: number
           prompt_id: number
           status: string
+          suggested_category: string
           title: string
         }[]
       }
