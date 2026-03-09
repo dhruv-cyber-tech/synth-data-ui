@@ -216,6 +216,23 @@ const CreatePrompt = () => {
                   />
                 </div>
 
+                {selectedCategoryId === "other" && (
+                  <FormField
+                    control={form.control}
+                    name="suggested_category"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-foreground font-mono text-xs uppercase tracking-wider">Custom Category Name</FormLabel>
+                        <FormControl>
+                          <Input placeholder="e.g. Music Production, Legal, Data Science..." className="bg-card border-border" {...field} />
+                        </FormControl>
+                        <p className="text-xs text-muted-foreground font-mono">⚠️ Your prompt will be reviewed by an admin before publishing.</p>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
+
                 <FormField
                   control={form.control}
                   name="price"
