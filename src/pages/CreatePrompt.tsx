@@ -25,6 +25,15 @@ const schema = z.object({
   category_id: z.string().min(1, "Select a category"),
   ai_model_target: z.string().optional(),
   content: z.string().trim().min(10, "Prompt content must be at least 10 characters").max(10000),
+  suggested_category: z.string().trim().max(100).optional(),
+}).refine((data) => {
+  if (data.category_id === "other") {
+    return data.suggested_category && data.suggested_category.length >= 3;
+  }
+  return true;
+}, {
+  message: "Custom category name must be at least 3 characters",
+  path: ["suggested_category"],
 });
 
 type FormValues = z.infer<typeof schema>;
