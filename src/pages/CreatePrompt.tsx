@@ -25,6 +25,15 @@ const schema = z.object({
   category_id: z.string().min(1, "Select a category"),
   ai_model_target: z.string().optional(),
   content: z.string().trim().min(10, "Prompt content must be at least 10 characters").max(10000),
+  suggested_category: z.string().trim().max(100).optional(),
+}).refine((data) => {
+  if (data.category_id === "other") {
+    return data.suggested_category && data.suggested_category.length >= 3;
+  }
+  return true;
+}, {
+  message: "Custom category name must be at least 3 characters",
+  path: ["suggested_category"],
 });
 
 type FormValues = z.infer<typeof schema>;
@@ -54,8 +63,11 @@ const CreatePrompt = () => {
       category_id: "",
       ai_model_target: "",
       content: "",
+      suggested_category: "",
     },
   });
+
+  const selectedCategoryId = form.watch("category_id");
 
   const onSubmit = async (values: FormValues) => {
     if (!user) {
@@ -65,19 +77,29 @@ const CreatePrompt = () => {
 
     setSubmitting(true);
     try {
+      const isOther = values.category_id === "other";
+      // Use first category as fallback for "other" (admin will reassign)
+      const fallbackCategoryId = categories?.[0]?.category_id || 1;
+
       const { data, error } = await supabase.rpc("create_prompt", {
         p_title: values.title,
         p_description: values.description,
         p_price: values.price,
-        p_category_id: parseInt(values.category_id),
+        p_category_id: isOther ? fallbackCategoryId : parseInt(values.category_id),
         p_ai_model_target: values.ai_model_target || null,
         p_content: values.content,
+        p_suggested_category: isOther ? values.suggested_category || null : null,
       });
 
       if (error) throw error;
 
-      toast({ title: "Prompt published!", description: "Your prompt is now live on the marketplace." });
-      navigate(`/prompt/${data}`);
+      toast({
+        title: isOther ? "Prompt submitted for review!" : "Prompt published!",
+        description: isOther
+          ? "Your prompt with a custom category is pending admin approval."
+          : "Your prompt is now live on the marketplace.",
+      });
+      navigate(isOther ? "/profile" : `/prompt/${data}`);
     } catch (err: any) {
       toast({ title: "Error", description: err.message, variant: "destructive" });
     } finally {
@@ -162,6 +184,7 @@ const CreatePrompt = () => {
                                 {cat.icon_url} {cat.name}
                               </SelectItem>
                             ))}
+                            <SelectItem value="other">🆕 Other (suggest new)</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -192,6 +215,23 @@ const CreatePrompt = () => {
                     )}
                   />
                 </div>
+
+                {selectedCategoryId === "other" && (
+                  <FormField
+                    control={form.control}
+                    name="suggested_category"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-foreground font-mono text-xs uppercase tracking-wider">Custom Category Name</FormLabel>
+                        <FormControl>
+                          <Input placeholder="e.g. Music Production, Legal, Data Science..." className="bg-card border-border" {...field} />
+                        </FormControl>
+                        <p className="text-xs text-muted-foreground font-mono">⚠️ Your prompt will be reviewed by an admin before publishing.</p>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
 
                 <FormField
                   control={form.control}
