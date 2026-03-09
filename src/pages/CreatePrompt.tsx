@@ -63,6 +63,7 @@ const CreatePrompt = () => {
       category_id: "",
       ai_model_target: "",
       content: "",
+      suggested_category: "",
     },
   });
 
