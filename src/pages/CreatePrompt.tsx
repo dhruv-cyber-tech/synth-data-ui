@@ -184,6 +184,7 @@ const CreatePrompt = () => {
                                 {cat.icon_url} {cat.name}
                               </SelectItem>
                             ))}
+                            <SelectItem value="other">🆕 Other (suggest new)</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
