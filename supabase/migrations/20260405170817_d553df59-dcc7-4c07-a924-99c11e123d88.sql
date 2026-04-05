@@ -1,0 +1,1 @@
+DROP TRIGGER IF EXISTS trg_create_initial_version ON public.prompts;
