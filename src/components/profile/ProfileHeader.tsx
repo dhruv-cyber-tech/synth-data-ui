@@ -65,6 +65,7 @@ const ProfileHeader = ({ profile, userId }: ProfileHeaderProps) => {
                 <Input
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
+                  maxLength={30}
                   className="bg-background border-border max-w-xs"
                 />
               </div>
