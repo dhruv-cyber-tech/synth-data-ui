@@ -21,6 +21,12 @@ const ProfileHeader = ({ profile, userId }: ProfileHeaderProps) => {
 
   const updateMutation = useMutation({
     mutationFn: async () => {
+      if (username.trim().length < 3 || username.length > 30) {
+        throw new Error("Username must be 3–30 characters.");
+      }
+      if (bio && bio.length > 500) {
+        throw new Error("Bio must be 500 characters or fewer.");
+      }
       const { error } = await supabase
         .from("profiles")
         .update({ username, bio, updated_at: new Date().toISOString() })

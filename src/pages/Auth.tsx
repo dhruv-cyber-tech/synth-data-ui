@@ -44,7 +44,11 @@ const Auth = () => {
         navigate("/");
       }
     } catch (error: any) {
-      toast.error(error.message);
+      if (isSignUp) {
+        toast.error("Could not create account. Please try again.");
+      } else {
+        toast.error("Invalid email or password.");
+      }
     } finally {
       setLoading(false);
     }
