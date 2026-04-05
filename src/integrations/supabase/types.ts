@@ -543,6 +543,10 @@ export type Database = {
         Args: { p_prompt_id: number; p_status: string }
         Returns: undefined
       }
+      can_access_prompt_content: {
+        Args: { p_prompt_id: number }
+        Returns: boolean
+      }
       create_prompt:
         | {
             Args: {
@@ -567,6 +571,7 @@ export type Database = {
             }
             Returns: number
           }
+      get_current_marketplace_user_id: { Args: never; Returns: number }
       get_my_prompts: {
         Args: never
         Returns: {
