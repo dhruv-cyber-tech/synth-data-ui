@@ -76,6 +76,7 @@ const ProfileHeader = ({ profile, userId }: ProfileHeaderProps) => {
                 <Textarea
                   value={bio}
                   onChange={(e) => setBio(e.target.value)}
+                  maxLength={500}
                   placeholder="Tell us about yourself..."
                   className="bg-background border-border max-w-md min-h-[80px]"
                 />

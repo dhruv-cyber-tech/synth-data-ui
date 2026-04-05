@@ -98,6 +98,8 @@ const Auth = () => {
                   onChange={(e) => setUsername(e.target.value)}
                   placeholder="hackerman"
                   required={isSignUp}
+                  minLength={3}
+                  maxLength={30}
                   className="bg-background border-border focus:border-primary"
                 />
               </div>
