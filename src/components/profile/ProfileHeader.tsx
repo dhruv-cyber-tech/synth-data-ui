@@ -21,6 +21,12 @@ const ProfileHeader = ({ profile, userId }: ProfileHeaderProps) => {
 
   const updateMutation = useMutation({
     mutationFn: async () => {
+      if (username.trim().length < 3 || username.length > 30) {
+        throw new Error("Username must be 3–30 characters.");
+      }
+      if (bio && bio.length > 500) {
+        throw new Error("Bio must be 500 characters or fewer.");
+      }
       const { error } = await supabase
         .from("profiles")
         .update({ username, bio, updated_at: new Date().toISOString() })
@@ -33,7 +39,7 @@ const ProfileHeader = ({ profile, userId }: ProfileHeaderProps) => {
       // Refresh auth context profile
       window.location.reload();
     },
-    onError: () => toast.error("Failed to update profile."),
+    onError: (err: Error) => toast.error(err.message || "Failed to update profile."),
   });
 
   const handleCancel = () => {
@@ -59,6 +65,7 @@ const ProfileHeader = ({ profile, userId }: ProfileHeaderProps) => {
                 <Input
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
+                  maxLength={30}
                   className="bg-background border-border max-w-xs"
                 />
               </div>
@@ -69,6 +76,7 @@ const ProfileHeader = ({ profile, userId }: ProfileHeaderProps) => {
                 <Textarea
                   value={bio}
                   onChange={(e) => setBio(e.target.value)}
+                  maxLength={500}
                   placeholder="Tell us about yourself..."
                   className="bg-background border-border max-w-md min-h-[80px]"
                 />

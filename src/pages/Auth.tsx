@@ -44,7 +44,11 @@ const Auth = () => {
         navigate("/");
       }
     } catch (error: any) {
-      toast.error(error.message);
+      if (isSignUp) {
+        toast.error("Could not create account. Please try again.");
+      } else {
+        toast.error("Invalid email or password.");
+      }
     } finally {
       setLoading(false);
     }
@@ -94,6 +98,8 @@ const Auth = () => {
                   onChange={(e) => setUsername(e.target.value)}
                   placeholder="hackerman"
                   required={isSignUp}
+                  minLength={3}
+                  maxLength={30}
                   className="bg-background border-border focus:border-primary"
                 />
               </div>
