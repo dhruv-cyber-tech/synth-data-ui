@@ -39,7 +39,7 @@ const ProfileHeader = ({ profile, userId }: ProfileHeaderProps) => {
       // Refresh auth context profile
       window.location.reload();
     },
-    onError: () => toast.error("Failed to update profile."),
+    onError: (err: Error) => toast.error(err.message || "Failed to update profile."),
   });
 
   const handleCancel = () => {
