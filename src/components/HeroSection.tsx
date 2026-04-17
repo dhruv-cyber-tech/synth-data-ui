@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { ArrowRight, Sparkles, Terminal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import TerminalAnimation from "./TerminalAnimation";
 
 const HeroSection = () => {
   return (
@@ -74,13 +75,7 @@ const HeroSection = () => {
               <div className="h-3 w-3 rounded-full bg-primary/60" />
               <span className="ml-2 text-xs font-mono text-muted-foreground">promptlab.sh</span>
             </div>
-            <div className="p-6 font-mono text-sm text-left space-y-2">
-              <p><span className="text-primary">$</span> <span className="text-muted-foreground">promptlab search</span> <span className="text-accent">"python bug fixer"</span></p>
-              <p className="text-muted-foreground/60">→ Found 12 results in 0.03s</p>
-              <p><span className="text-primary">$</span> <span className="text-muted-foreground">promptlab install</span> <span className="text-accent">prompt-id-4</span></p>
-              <p className="text-terminal-green">✓ Python Bug Fixer v1.0 installed — $12.99</p>
-              <p className="text-muted-foreground/40 animate-pulse-glow">█</p>
-            </div>
+            <TerminalAnimation />
           </div>
         </motion.div>
       </div>
